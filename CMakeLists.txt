@@ -1,0 +1,49 @@
+# cmake file
+
+cmake_minimum_required(VERSION 3.2.0)
+
+include(cmake/common.cmake)
+
+set(ENUMFLAGS_STANDALONE TRUE)
+
+if(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  set(ENUMFLAGS_STANDALONE FALSE)
+
+  file(RELATIVE_PATH ENUMFLAGS_REL_DIR ${CMAKE_SOURCE_DIR}
+    ${CMAKE_CURRENT_LIST_DIR})
+endif()
+
+if(ENUMFLAGS_STANDALONE)
+  project(${ENUMFLAGS_NAME} CXX)
+endif()
+
+# CMP0056 is required for any libc++abi dependency of the try_compile() command
+# this bumps required version to 3.2
+# otherwise LD_LIBRARY_DIR needs to be set
+cmake_policy(SET CMP0056 NEW)
+
+add_library(${ENUMFLAGS_TARGET} INTERFACE)
+
+target_include_directories(${ENUMFLAGS_TARGET} INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${ENUMFLAGS_INCLUDE_DIR}>)
+
+if(ENUMFLAGS_STANDALONE)
+  target_include_directories(${ENUMFLAGS_TARGET} INTERFACE
+    $<INSTALL_INTERFACE:${ENUMFLAGS_INCLUDE_DIR}>)
+else()
+  target_include_directories(${ENUMFLAGS_TARGET} INTERFACE
+    $<INSTALL_INTERFACE:${ENUMFLAGS_REL_DIR}/${ENUMFLAGS_INCLUDE_DIR}>)
+endif()
+
+
+
+# installation
+
+set(CMAKE_INSTALL_MESSAGE "LAZY")
+
+install(TARGETS ${ENUMFLAGS_TARGET} EXPORT ${ENUMFLAGS_NAME}
+  DESTINATION ${ENUMFLAGS_INCLUDE_DIR})
+
+install(DIRECTORY ${ENUMFLAGS_INCLUDE_DIR}
+  DESTINATION ${CMAKE_INSTALL_PREFIX})
+
