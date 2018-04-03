@@ -25,8 +25,6 @@ if(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   endif()
 endif()
 
-include(${CMAKE_CURRENT_LIST_DIR}/cmake/common.cmake)
-
 if(ENUMFLAGS_STANDALONE)
   project(${ENUMFLAGS_NAME} CXX)
 endif()
